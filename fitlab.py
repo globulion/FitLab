@@ -40,7 +40,7 @@ class FitParameters:
             
         if scrolled:
             self.topframe = Pmw.ScrolledFrame(self.master,
-                 usehullsize=1, hull_height=290, hull_width=290)
+                 usehullsize=1, hull_height=290, hull_width=390)
             self.create(self.topframe.interior())
         else:
             self.topframe = Frame(self.master, borderwidth=2, relief='groove')
@@ -73,7 +73,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                #
@@ -82,7 +82,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                #
@@ -91,7 +91,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                   
@@ -103,14 +103,14 @@ class FitParameters:
                   pair.append(Pmw.EntryField(frame_cmin,
                                    labelpos='w',
                                    label_text=text,
-                                   entry_width='5',
+                                   entry_width='10',
                                    entry_textvariable=cmin,))
                   cmax  = DoubleVar(); cmax.set(3000.0)
                   text = 'max'
                   pair.append(Pmw.EntryField(frame_cmax,
                                    labelpos='w',
                                    label_text=text,
-                                   entry_width='5',
+                                   entry_width='10',
                                    entry_textvariable=cmax,))
                   constraint_widgets.append(pair)
                   constraint_widgets_values.append([cmin.get(),cmax.get()])
@@ -122,7 +122,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                #
@@ -131,7 +131,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                #
@@ -140,7 +140,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                #
@@ -149,7 +149,7 @@ class FitParameters:
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
                                     label_text=text,
-                                    entry_width='5',
+                                    entry_width='10',
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                   
@@ -161,18 +161,85 @@ class FitParameters:
                   pair.append(Pmw.EntryField(frame_cmin,
                                    labelpos='w',
                                    label_text=text,
-                                   entry_width='5',
+                                   entry_width='10',
                                    entry_textvariable=cmin,))
                   cmax  = DoubleVar(); cmax.set(3000.0)
                   text = 'max'
                   pair.append(Pmw.EntryField(frame_cmax,
                                    labelpos='w',
                                    label_text=text,
-                                   entry_width='5',
+                                   entry_width='10',
                                    entry_textvariable=cmax,))
                   constraint_widgets.append(pair)
                   constraint_widgets_values.append([cmin.get(),cmax.get()])
-                    
+
+        elif self.func == 'lg2':
+           for i in range(self.peak_no):
+               text = 'xo_%i'%(i+1)
+               param  = DoubleVar(); param.set(1.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'sigmaL_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'sigmaG_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'A_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'm_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+                  
+               if self.constrained:
+                 for i in range(5):
+                  pair = []
+                  text = 'min'
+                  cmin  = DoubleVar(); cmin.set(0.0)
+                  pair.append(Pmw.EntryField(frame_cmin,
+                                   labelpos='w',
+                                   label_text=text,
+                                   entry_width='10',
+                                   entry_textvariable=cmin,))
+                  cmax  = DoubleVar(); cmax.set(3000.0)
+                  text = 'max'
+                  pair.append(Pmw.EntryField(frame_cmax,
+                                   labelpos='w',
+                                   label_text=text,
+                                   entry_width='10',
+                                   entry_textvariable=cmax,))
+                  constraint_widgets.append(pair)
+                  constraint_widgets_values.append([cmin.get(),cmax.get()])
+                                      
         for widget in param_widgets:
             widget.pack(side='top')
 
@@ -181,7 +248,12 @@ class FitParameters:
             widget_max.pack(side='top')
 
         Pmw.alignlabels(param_widgets     )
-        Pmw.alignlabels(constraint_widgets)
+        l1 = []
+        l2 = []
+        for i in range(len(constraint_widgets)):
+            l1.append(constraint_widgets[i][0])
+            l2.append(constraint_widgets[i][1])
+        Pmw.alignlabels(l1);Pmw.alignlabels(l2)
         
         self.param_widgets        = param_widgets
         self.param_widgets_values = array(param_widgets_values,dtype=float64)
@@ -220,7 +292,7 @@ class InputLists:
         
     def create(self, parent):
 
-        header = Label(parent, text='Widgets for list data', 
+        header = Label(parent, text='Widgets for list data - FitLab Studio Future!:D', 
                        font='courier 14 bold', foreground='blue',
                        background='#%02x%02x%02x' % (196,196,196))
         header.pack(side='top', pady=10, ipady=10, fill='x')
@@ -448,7 +520,7 @@ class FitWork:
         #frame_param = Frame(parent); frame_param.pack(side='left',fill='y',expand='yes')
         sub_frame_peaks = Frame(parent); sub_frame_peaks.pack(side='top',fill='both')
         #sub_frame_param = Frame(parent); sub_frame_param.pack(side='top',fill='both')
-        
+        self.frame =  frame_graph
         # canvas
         self.fig = pylab.figure(1)
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame_graph)
@@ -544,10 +616,12 @@ class FitWork:
         self.ax1.set_title("Signal Fitting Workplate")
         self.ax1.set_xlabel("Frequency [cm$^{-1}$]")
         self.ax1.set_ylabel("Absorbance")
+        
+        self.ax1.axis([min(self.__x),max(self.__x),min(self.__y),max(self.__y)])        
         self.line1, = self.ax1.plot(self.__x,self.__y,linewidth='2',label='raw')
         self.fig.legend((self.line1,),('raw',),loc='upper right')
 
-    def _fit(self,method='slsqp'): 
+    def _fit(self,method='slsqp'):
         """perform fitting"""
         peak = utilities.Peak(self.__x,self.__y)
         constr = self.__constraints
@@ -629,16 +703,16 @@ class FitWork:
                opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]],['A_1',pars[3]], ['m_1',pars[4]]]
           elif peak_no ==2: 
                opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]], ['A_1',pars[3]], ['m_1',pars[4]],
-                       ['xo_2',pars[5]], ['sigmaL_2',pars[6]], ['sigmaG_1',pars[7]], ['A_2',pars[8]], ['m_2',pars[9]]]
+                       ['xo_2',pars[5]], ['sigmaL_2',pars[6]], ['sigmaG_2',pars[7]], ['A_2',pars[8]], ['m_2',pars[9]]]
           elif peak_no ==3: 
                opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]], ['A_1',pars[3]], ['m_1',pars[4]],
-                       ['xo_2',pars[5]], ['sigmaL_2',pars[6]], ['sigmaG_1',pars[7]], ['A_2',pars[8]], ['m_2',pars[9]],
-                       ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_1',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]]]
+                       ['xo_2',pars[5]], ['sigmaL_2',pars[6]], ['sigmaG_2',pars[7]], ['A_2',pars[8]], ['m_2',pars[9]],
+                       ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_3',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]]]
           elif peak_no ==4: 
                opts = [['xo_1',pars[0 ]], ['sigmaL_1',pars[1 ]], ['sigmaG_1',pars[2]], ['A_1',pars[3 ]], ['m_1',pars[4 ]],
-                       ['xo_2',pars[5 ]], ['sigmaL_2',pars[6 ]], ['sigmaG_1',pars[7]], ['A_2',pars[8 ]], ['m_2',pars[9 ]],
-                       ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_1',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]],
-                       ['xo_4',pars[15]], ['sigmaL_4',pars[16]], ['sigmaG_1',pars[17]], ['A_4',pars[18]], ['m_4',pars[19]]]
+                       ['xo_2',pars[5 ]], ['sigmaL_2',pars[6 ]], ['sigmaG_2',pars[7]], ['A_2',pars[8 ]], ['m_2',pars[9 ]],
+                       ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_3',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]],
+                       ['xo_4',pars[15]], ['sigmaL_4',pars[16]], ['sigmaG_4',pars[17]], ['A_4',pars[18]], ['m_4',pars[19]]]
         return opts
                         
     def update(self):
@@ -651,7 +725,10 @@ class FitWork:
         print " I have reset myself! Start fitting again, young lad or laddness!"
             
     def _parameter_dialog(self):
-        self.parameter_d = Pmw.Dialog(self.master,
+        self.t2 = Tkinter.Tk()
+        self.t2.frame = Frame(self.t2)
+        self.frame = Frame(self.master)
+        self.parameter_d = Pmw.Dialog(self.t2.frame,
                           title='Fitting workshop',
                           buttons=('Apply', 'Cancel'),
                           #defaultbutton='Apply',
@@ -662,7 +739,7 @@ class FitWork:
                                          func=self.__func,constrained=self.__if_constrained,
                                          balloon=self.balloon, scrolled=True)
         self.parameter_d_gui.pack()
-
+        
     def _parameter_dialog_action(self, result):
         # result contains the name of the button that we clicked
         if result == 'Apply':
@@ -675,8 +752,12 @@ class FitWork:
         else:
             text = 'your input parameters were lost!'
             self.status_line.configure(text=text)
-            self.parameter_d.destroy()
+            #self.parameter_d.quit()
             self.reset()
+            self.parameter_d.destroy()
+            self.t2.destroy()
+            #self.frame.destroy()
+            
         # does not work: self.dialog.deactivate(result)
         #self.parameter_d.destroy()  # destroy dialog window
                 
@@ -760,76 +841,57 @@ class FitFields:
         self.fig = pylab.figure(1)
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame_graph)
         self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
         self.toolbar = NavigationToolbar2TkAgg( self.canvas, frame_graph )
         self.toolbar.update()
         self.canvas._tkcanvas.pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
-        #self.master.protocol("WM_DELETE_WINDOW", self._dest)
-        
-        # option menu 1:
-        self.func_fit = StringVar(); self.func_fit.set('y')
-        self.func_fit_widget = Pmw.OptionMenu(frame_peaks,
-               labelpos='n',  # n, nw, ne, e, and so on
-               label_text='Fitting function',
-               items=['Gaussian', 'Lorenzian', 'Voight'],
-               menubutton_textvariable=self.func_fit,
-               menubutton_width=6,
-               command=self._status_option)
-
-        # option menu 2:               
-        self.peak_no = StringVar(); self.peak_no.set('1')
-        self.peak_no_widget = Pmw.OptionMenu(frame_peaks,
-               labelpos='n',  # n, nw, ne, e, and so on
-               label_text='Peak number',
-               items=['1','2','3','4'],
-               menubutton_textvariable=self.peak_no,
-               menubutton_width=3,
-               command=self._status_option)
+        #self.master.protocol("WM_DELETE_WINDOW", self.master.quit)
                
         # sliders
         self.m1 = DoubleVar();  self.m1.set(0.0)
         self.move_smpl_widget = Scale(frame_right,
-                                       orient='vertical',
+                                       orient='horizontal',
                                        #label="Sample",
                                        from_=-0.1, to=0.1, 
                                        sliderlength=10,
                                        #,tickinterval=0.1
-                                       length=45, 
+                                       length=450, 
                                        resolution=0.0001,
                                        variable = self.m1,
                                        command=self._move1)
                                        
         self.m2 = DoubleVar();  self.m2.set(0.0)
         self.move_bkgr_widget = Scale(frame_right,
-                                       orient='vertical',
+                                       orient='horizontal',
                                        #label="Background",
                                        from_=-0.1, to=0.1,
                                        sliderlength=10,
                                        #,tickinterval=0.1
-                                       length=45,
+                                       length=450,
                                        resolution=0.0001,
                                        variable = self.m2,
                                        command=self._move2)
 
         self.s1 = DoubleVar();  self.s1.set(1.0)
         self.scle_smpl_widget = Scale(frame_right,
-                                       orient='vertical',
+                                       orient='horizontal',
                                        #label="Sample",
                                        from_=0.5, to=2.0, 
                                        sliderlength=10,
                                        #,tickinterval=0.1
-                                       length=45, 
+                                       length=450, 
                                        resolution=0.0001,
                                        variable = self.s1,
                                        command=self._scale1)
                                        
         self.s2 = DoubleVar();  self.s2.set(1.0)
         self.scle_bkgr_widget = Scale(frame_right,
-                                       orient='vertical',
+                                       orient='horizontal',
                                        #label="Sample",
                                        from_=0.5, to=2.0, 
                                        sliderlength=10,
                                        #,tickinterval=0.1
-                                       length=45, 
+                                       length=450, 
                                        resolution=0.0001,
                                        variable = self.s2,
                                        command=self._scale2)
@@ -889,19 +951,6 @@ class FitFields:
         # --- buttons
         widgets = (self.quit_button_widget,)
         for w in widgets: w.pack(side='right',anchor='center',ipady=4,ipadx=2,padx=10,pady=10)
-        
-        # --- lists
-        widgets = (self.peak_no_widget,)
-                   #self.move_smpl_widget,
-                   #self.move_bkgr_widget,
-                   #self.scle_smpl_widget,
-                   #self.scle_bkgr_widget,)
-        #for w in widgets:
-        #    w.pack(side='left', pady=0, anchor='w')
-        #Pmw.alignlabels(widgets)
-        
-        # --- radio check buttons
-        #self.check_func_widget.pack(side='top', pady=4, padx=4, anchor='w') 
 
         # --- sliders
         widgets = (self.move_smpl_widget,
@@ -909,16 +958,14 @@ class FitFields:
                    self.scle_smpl_widget,
                    self.scle_bkgr_widget,)
         for w in widgets:
-            w.pack(side='left', pady=0, anchor='w')
+            w.pack(side='top', anchor='w')
         Pmw.alignlabels(widgets)  
-        
-        #self.if_gaussian_widget.pack(side='top', anchor='w', pady=3) 
 
         # --- entry fields
         widgets = (self.min_freq_widget,
                    self.max_freq_widget,)
         for w in widgets:
-            w.pack(side='left', pady=0, anchor='w')
+            w.pack(side='top', padx=10, anchor='w')
                                            
     def _status_checkbutton(self):
         self.status_line.configure(text='Gaussian fitting checkbutton: ' + \
@@ -935,7 +982,6 @@ class FitFields:
 
     def _quit(self): 
         self.master.quit()
-        self.master.destroy()
         
     def _dest(self): 
         self.master.destroy()
@@ -958,6 +1004,9 @@ class FitFields:
         self.line1, = self.ax1.plot(self.x,self.smpl)
         self.line2, = self.ax1.plot(self.x,self.bkgr)
         self.line3, = self.ax2.plot(self.x,self.diff)
+        
+        self.ax1.axis([min(self.x),max(self.x),min(self.smpl),max(self.smpl)])
+        self.ax2.axis([min(self.x),max(self.x),min(self.smpl),max(self.smpl)])
 
     def get_frequency_ranges(self):
         self.__min_freq_start = float64(self.min_freq.get())
@@ -1038,10 +1087,12 @@ class FitLab:
         self.fields.pack(side='top',padx=30,pady=20)
 
         Button(self.master, text='Display widgets for list data',
-               command=self.list_dialog, width=29).pack(pady=2)
+               command=self.list_dialog, width=29).pack(padx=20,pady=2,side='left',
+                                                        fill='x',expand=1)
         
         Button(self.master, text='Display the source code',
-               command=self.display_code, width=29).pack(pady=2)
+               command=self.display_code, width=29).pack(padx=20,pady=2,side='left',
+                                                         fill='x',expand=1)
         
         # type q to quit:
         self.master.bind('<q>', self.quit) # self.quit needs an event argument
@@ -1201,7 +1252,6 @@ to the FitLab Studio user."""
         # result contains the name of the button that we clicked
         if result == 'Apply':
             # example on extracting dialog variables:
-            #case = self.fitting_d_gui.case.get()
             print "Hi"
             # (changing variables in self.gui are reflected in
             # the self.status_line)
@@ -1461,6 +1511,7 @@ def create_fields():
     widget.pack()
     status.pack()  # get the status line below the widgets
     root.mainloop()
+import tkMessageBox
     
 def run_fitlab(bkgr,smpl):
     root = Tk()
@@ -1468,6 +1519,10 @@ def run_fitlab(bkgr,smpl):
     root.title('Fitlab Studio 2013')
     widget = FitLab(root,bkgr=bkgr,smpl=smpl)
     # this widget packs itself...
+    #def ask_quit():
+    #if tkMessageBox.askokcancel("Quit", "You want to quit now? *sniff*"):
+    # root.destroy()
+    #root.protocol("WM_DELETE_WINDOW", ask_quit)
     root.mainloop()
     
 # run FitLab and enjoy!!!
