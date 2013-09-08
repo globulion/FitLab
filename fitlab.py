@@ -66,9 +66,9 @@ class FitParameters:
         param_widgets_values = []
         constraint_widgets = []
         constraint_widgets_values = []
-        if self.func == 'g':
+        if (self.func == 'g' or self.func == 'l'):
            for i in range(self.peak_no):
-               text = 'A_%i'%(i+1)
+               text = 'xo_%i'%(i+1)
                param  = DoubleVar(); param.set(1.0)
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
@@ -86,7 +86,7 @@ class FitParameters:
                                     entry_textvariable=param,))
                param_widgets_values.append(param.get())
                #
-               text = 'xo_%i'%(i+1)
+               text = 'A_%i'%(i+1)
                param  = DoubleVar(); param.set(3.0)
                param_widgets.append(Pmw.EntryField(frame_par,
                                     labelpos='w',
@@ -105,7 +105,7 @@ class FitParameters:
                                    label_text=text,
                                    entry_width='5',
                                    entry_textvariable=cmin,))
-                  cmax  = DoubleVar(); cmax.set(0.0)
+                  cmax  = DoubleVar(); cmax.set(3000.0)
                   text = 'max'
                   pair.append(Pmw.EntryField(frame_cmax,
                                    labelpos='w',
@@ -114,7 +114,65 @@ class FitParameters:
                                    entry_textvariable=cmax,))
                   constraint_widgets.append(pair)
                   constraint_widgets_values.append([cmin.get(),cmax.get()])
-                     
+
+        elif self.func == 'lg1':
+           for i in range(self.peak_no):
+               text = 'xo_%i'%(i+1)
+               param  = DoubleVar(); param.set(1.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='5',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'sigma_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='5',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'A_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='5',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'm_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='5',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+                  
+               if self.constrained:
+                 for i in range(4):
+                  pair = []
+                  text = 'min'
+                  cmin  = DoubleVar(); cmin.set(0.0)
+                  pair.append(Pmw.EntryField(frame_cmin,
+                                   labelpos='w',
+                                   label_text=text,
+                                   entry_width='5',
+                                   entry_textvariable=cmin,))
+                  cmax  = DoubleVar(); cmax.set(3000.0)
+                  text = 'max'
+                  pair.append(Pmw.EntryField(frame_cmax,
+                                   labelpos='w',
+                                   label_text=text,
+                                   entry_width='5',
+                                   entry_textvariable=cmax,))
+                  constraint_widgets.append(pair)
+                  constraint_widgets_values.append([cmin.get(),cmax.get()])
+                    
         for widget in param_widgets:
             widget.pack(side='top')
 
@@ -122,7 +180,9 @@ class FitParameters:
             widget_min.pack(side='top')
             widget_max.pack(side='top')
 
-            
+        Pmw.alignlabels(param_widgets     )
+        Pmw.alignlabels(constraint_widgets)
+        
         self.param_widgets        = param_widgets
         self.param_widgets_values = array(param_widgets_values,dtype=float64)
         self.constraint_widgets = constraint_widgets
@@ -401,7 +461,7 @@ class FitWork:
         self.peak_no_widget = Pmw.OptionMenu(sub_frame_peaks,
                labelpos='n',  # n, nw, ne, e, and so on
                label_text='Peak number',
-               items=[1,2,3,4,5,6,7,8,9,10],
+               items=[1,2,3,4],
                menubutton_textvariable=self.peak_no,
                menubutton_width=3,
                command=self._get_peak_no)
@@ -417,7 +477,7 @@ class FitWork:
                command=self._get_func)
 
         ### add items; radio buttons are only feasible for a few items:
-        for text in ('Gaussian', 'Lorenzian', 'Voight'):
+        for text in ('Gaussian', 'Lorenzian', 'LG-1', 'LG-2', 'Voight'):
             self.check_func_widget.add(text)
         self.check_func_widget.invoke('Gaussian')  ### 'item2' is pressed by default
         
@@ -456,6 +516,8 @@ class FitWork:
         if   value == 'Gaussian' : self.__func = 'g'
         elif value == 'Lorenzian': self.__func = 'l'
         elif value == 'Voight'   : self.__func = 'v'
+        elif value == 'LG-1'     : self.__func = 'lg1'
+        elif value == 'LG-2'     : self.__func = 'lg2'
         self._status_radio_check_func(value)
         
     def __pack(self):
@@ -482,36 +544,25 @@ class FitWork:
         self.ax1.set_title("Signal Fitting Workplate")
         self.ax1.set_xlabel("Frequency [cm$^{-1}$]")
         self.ax1.set_ylabel("Absorbance")
-        self.line1, = self.ax1.plot(self.__x,self.__y,linewidth='1',label='raw')
+        self.line1, = self.ax1.plot(self.__x,self.__y,linewidth='2',label='raw')
         self.fig.legend((self.line1,),('raw',),loc='upper right')
 
-    def _fit(self): 
+    def _fit(self,method='slsqp'): 
         """perform fitting"""
         peak = utilities.Peak(self.__x,self.__y)
-        pars = self.__parameters
         constr = self.__constraints
         peak_no = self.__peak_no
-        if pars is None: pass
-        peak.set_peak(peak_no)
-        if self.__func == 'g':
-          if   peak_no ==1: 
-               opts = [['A',pars[0]], ['sigma',pars[1] ],['x_o',pars[2]]]
-          elif peak_no ==2: 
-               opts = [['A_1',pars[0]], ['sigma_1',pars[1]], ['x_o1',pars[2]],
-                       ['A_2',pars[3]], ['sigma_2',pars[4]], ['x_o2',pars[5]]]
-          elif peak_no ==3: 
-               opts = [['A_1',pars[0]], ['sigma_1',pars[1]], ['x_o1',pars[2]],
-                       ['A_2',pars[3]], ['sigma_2',pars[4]], ['x_o2',pars[5]],
-                       ['A_3',pars[6]], ['sigma_3',pars[7]], ['x_o3',pars[8]]]
-          elif peak_no ==4: 
-               opts = [['A_1',pars[0 ]], ['sigma_1',pars[1 ]], ['x_o1',pars[2 ]],
-                       ['A_2',pars[3 ]], ['sigma_2',pars[4 ]], ['x_o2',pars[5 ]],
-                       ['A_3',pars[6 ]], ['sigma_3',pars[4 ]], ['x_o3',pars[5 ]],
-                       ['A_4',pars[9 ]], ['sigma_4',pars[10]], ['x_o4',pars[11]]]
-
-        peak.fit(opts)
-        param = peak.param
-        fitdata = peak.get_values()
+        bounds = []
+        if constr.any():
+            for c in  constr: bounds.append((c[0],c[1]))
+        if self.__parameters is None: pass
+        peak.set_peak(peak_no,func_name=self.__func)
+        
+        opts = self.__get_opts()
+        
+        peak.fit(opts,method=method,bounds=bounds)
+        param   = peak.get_parameters()
+        fitdata = peak.get_fit()
         peaks   = peak.get_peaks()
         print 'R^2: %20.6f' % peak.get_r2()
         print 'PARAMETERS\n\n', param
@@ -519,7 +570,7 @@ class FitWork:
         print " Reseted?: ",str(self.__if_peakfit)
         if not self.__if_peakfit:
            self.__if_peakfit = True
-           self.line2, = self.ax1.plot(self.__x,fitdata,':k',label='fit',linewidth='1')
+           self.line2, = self.ax1.plot(self.__x,fitdata,':',label='fit',linewidth='2')
            if peak_no > 1:
               self.line3, = self.ax1.plot(self.__x,peaks[0],label='peak 1')
               self.line4, = self.ax1.plot(self.__x,peaks[1],label='peak 2')
@@ -538,7 +589,58 @@ class FitWork:
                     self.line6.set_ydata(peaks[3])
 
         self.canvas.draw()
-            
+
+    def __get_opts(self):
+        """create opts list for fit method of Peak class"""
+        pars = self.__parameters
+        peak_no = self.__peak_no
+        if (self.__func == 'g' or self.__func == 'l'):
+          if   peak_no ==1: 
+               opts = [['xo_1',pars[0]], ['sigma_1',pars[1] ],['A_1',pars[2]]]
+          elif peak_no ==2: 
+               opts = [['xo_1',pars[0]], ['sigma_1',pars[1]], ['A_1',pars[2]],
+                       ['xo_2',pars[3]], ['sigma_2',pars[4]], ['A_2',pars[5]]]
+          elif peak_no ==3: 
+               opts = [['xo_1',pars[0]], ['sigma_1',pars[1]], ['A_1',pars[2]],
+                       ['xo_2',pars[3]], ['sigma_2',pars[4]], ['A_2',pars[5]],
+                       ['xo_3',pars[6]], ['sigma_3',pars[7]], ['A_3',pars[8]]]
+          elif peak_no ==4: 
+               opts = [['xo_1',pars[0 ]], ['sigma_1',pars[1 ]], ['A_1',pars[2 ]],
+                       ['xo_2',pars[3 ]], ['sigma_2',pars[4 ]], ['A_2',pars[5 ]],
+                       ['xo_3',pars[6 ]], ['sigma_3',pars[4 ]], ['A_3',pars[5 ]],
+                       ['xo_4',pars[9 ]], ['sigma_4',pars[10]], ['A_4',pars[11]]]
+        elif self.__func == 'lg1':
+          if   peak_no ==1: 
+               opts = [['xo_1',pars[0]], ['sigma_1',pars[1] ],['A_1',pars[2]], ['m_1',pars[3]]]
+          elif peak_no ==2: 
+               opts = [['xo_1',pars[0]], ['sigma_1',pars[1]], ['A_1',pars[2]], ['m_1',pars[3]],
+                       ['xo_2',pars[4]], ['sigma_2',pars[5]], ['A_2',pars[6]], ['m_2',pars[7]]]
+          elif peak_no ==3: 
+               opts = [['xo_1',pars[0]], ['sigma_1',pars[1]], ['A_1',pars[2]], ['m_1',pars[3]],
+                       ['xo_2',pars[4]], ['sigma_2',pars[5]], ['A_2',pars[6]], ['m_2',pars[7]],
+                       ['xo_3',pars[8]], ['sigma_3',pars[9]], ['A_3',pars[10]], ['m_3',pars[11]]]
+          elif peak_no ==4: 
+               opts = [['xo_1',pars[0 ]], ['sigma_1',pars[1 ]], ['A_1',pars[2 ]], ['m_1',pars[3 ]],
+                       ['xo_2',pars[4 ]], ['sigma_2',pars[5 ]], ['A_2',pars[6 ]], ['m_2',pars[7 ]],
+                       ['xo_3',pars[8 ]], ['sigma_3',pars[9 ]], ['A_3',pars[10]], ['m_3',pars[11]],
+                       ['xo_4',pars[12]], ['sigma_4',pars[13]], ['A_4',pars[14]], ['m_4',pars[15]]]
+        elif self.__func == 'lg2':
+          if   peak_no ==1: 
+               opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]],['A_1',pars[3]], ['m_1',pars[4]]]
+          elif peak_no ==2: 
+               opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]], ['A_1',pars[3]], ['m_1',pars[4]],
+                       ['xo_2',pars[5]], ['sigmaL_2',pars[6]], ['sigmaG_1',pars[7]], ['A_2',pars[8]], ['m_2',pars[9]]]
+          elif peak_no ==3: 
+               opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]], ['A_1',pars[3]], ['m_1',pars[4]],
+                       ['xo_2',pars[5]], ['sigmaL_2',pars[6]], ['sigmaG_1',pars[7]], ['A_2',pars[8]], ['m_2',pars[9]],
+                       ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_1',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]]]
+          elif peak_no ==4: 
+               opts = [['xo_1',pars[0 ]], ['sigmaL_1',pars[1 ]], ['sigmaG_1',pars[2]], ['A_1',pars[3 ]], ['m_1',pars[4 ]],
+                       ['xo_2',pars[5 ]], ['sigmaL_2',pars[6 ]], ['sigmaG_1',pars[7]], ['A_2',pars[8 ]], ['m_2',pars[9 ]],
+                       ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_1',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]],
+                       ['xo_4',pars[15]], ['sigmaL_4',pars[16]], ['sigmaG_1',pars[17]], ['A_4',pars[18]], ['m_4',pars[19]]]
+        return opts
+                        
     def update(self):
         """replot the data and add fitted peaks"""
         pass
@@ -692,7 +794,7 @@ class FitFields:
                                        sliderlength=10,
                                        #,tickinterval=0.1
                                        length=45, 
-                                       resolution=0.000001,
+                                       resolution=0.0001,
                                        variable = self.m1,
                                        command=self._move1)
                                        
@@ -700,11 +802,11 @@ class FitFields:
         self.move_bkgr_widget = Scale(frame_right,
                                        orient='vertical',
                                        #label="Background",
-                                       from_=-0.1, to=0.1, 
+                                       from_=-0.1, to=0.1,
                                        sliderlength=10,
                                        #,tickinterval=0.1
-                                       length=45, 
-                                       resolution=0.000001,
+                                       length=45,
+                                       resolution=0.0001,
                                        variable = self.m2,
                                        command=self._move2)
 
