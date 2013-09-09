@@ -549,6 +549,7 @@ class FitWork:
         self.__peak_no = 1
         self.__func = 'g'
         self.__if_constrained = False
+        self.__peak = None
         if data is not None:
            self.__x = data[:,0]
            self.__y = data[:,1]
@@ -632,6 +633,24 @@ class FitWork:
                                          command=self._fit)
         self.__pack()
         self.__plot()
+
+    def get_peaks(self):
+        """
+    Return peaks data as a tuple (Peak instance,array instance)
+    Array contains:
+    1st collumn: x-axis (frequencies)
+    2nd collumn: y-axis (experimental spectrum)
+    3rd collumn: y-axis (fitted data)
+    from 4th cl: y-axis (each peak listed separately)
+    """
+        peaks =  self.__peak.get_peaks()
+        data = zeros((len(self.__x),len(peaks)+3),dtype=float64)
+        data[:,0] = self.__x
+        data[:,1] = self.__y
+        data[:,2] = self.__peak.get_fit()
+        for i in range(len(peaks)):
+            data[:,i+3] = peaks[i,:]
+        return self.__peak, data
     
     def _get_peak_no(self,value):
         self.__peak_no = value
@@ -697,6 +716,7 @@ class FitWork:
         fitdata = peak.get_fit()
         peaks   = peak.get_peaks()
         print peak
+        self.__peak = peak
 
         #print " Reseted?: ",str(self.__if_peakfit)
         if not self.__if_peakfit:
@@ -799,6 +819,7 @@ class FitWork:
     def _parameter_dialog(self):
         self.t2 = Tkinter.Tk()
         self.t2.frame = Frame(self.t2)
+        #filewindow = Toplevel(parent)
         self.frame = Frame(self.master)
         self.parameter_d = Pmw.Dialog(self.t2.frame,
                           title='Fitting workshop',
@@ -817,10 +838,11 @@ class FitWork:
         if result == 'Apply':
             self.parameter_d_gui.update()
             self.__parameters, self.__constraints = self.parameter_d_gui.get()
-            print " PARAMETES"
-            print self.__parameters
-            print " CONSTRAINTS"
-            print self.__constraints
+            print " NEW FITTING SETTINGS\n"
+            print " - PARAMETES -"
+            utilities.PRINT(self.__parameters)
+            print " - CONSTRAINTS -"
+            utilities.PRINT(self.__constraints)
         else:
             text = 'your input parameters were lost!'
             self.status_line.configure(text=text)
@@ -872,6 +894,11 @@ class FitFields:
         self.set_data(smpl,bkgr,x)
         self.__value1 = 0.0
         self.__value2 = 0.0
+        ### bkgr optimization options
+        self.__w_min_range = -0.06
+        self.__w_max_range =  0.06
+        self.__w_min = 0.0
+        self.__w_max = 1.0
                       
         if scrolled:
             # use an intelligent Pmw.ScrolledFrame widget to hold the
@@ -974,6 +1001,12 @@ class FitFields:
                                          background='yellow',
                                          foreground='blue',
                                          command=self._quit)
+                                         
+        self.opt_button_widget = Button(frame_buttn,
+                                         text='Optimize',
+                                         background='grey',
+                                         foreground='blue',
+                                         command=self._optimize)
 
         # entry fields
         self.min_freq = DoubleVar(); self.min_freq.set(self.__min_freq_start)
@@ -999,8 +1032,8 @@ class FitFields:
     def __pack(self):
         """packs all intrinsic widgets"""
         # --- buttons
-        widgets = (self.quit_button_widget,)
-        for w in widgets: w.pack(side='right',anchor='center',ipady=4,ipadx=2,padx=10,pady=10)
+        widgets = (self.quit_button_widget,self.opt_button_widget)
+        for w in widgets: w.pack(side='bottom',anchor='center',ipady=4,ipadx=2,padx=10,pady=10)
 
         # --- sliders
         widgets = (self.move_smpl_widget,
@@ -1016,7 +1049,50 @@ class FitFields:
                    self.max_freq_widget,)
         for w in widgets:
             w.pack(side='top', padx=10, anchor='w')
-                                           
+
+    def _optimize(self):
+        """perform constrained bacground-sample optimization"""
+        #N = self.ndat
+        #MIN,MAX = self.get_frequency_ranges()
+        #x,smpl = self.__cut(self.x,self.smpl,MIN,MAX)
+        #x,bkgr = self.__cut(self.x,self.bkgr,MIN,MAX)
+        
+        #W = self.__get_weights()
+        #W2= W**2
+        #W2= self.__cut(self.x,W2,MIN,MAX)
+        #W = sum(W2)
+        #G = sum(bkgr*W2)
+        #F = sum(smpl*W2)
+        #FG= sum(bkgr*smpl*W2)
+        #G2= sum(bkgr*bkgr*W2)
+        #a = (FG*W-F*G)/(G**2-W*G2)
+        #b = (G2*a - FG)/G
+        #### apply the changes
+        #self.bkgr *= a
+        #self.bkgr += b
+        #self.diff = self.smpl - self.bkgr
+        #self.line2.set_ydata(self.bkgr)
+        #self.line3.set_ydata(self.diff)
+        #self.canvas.draw()
+        #print "\n OPTIMIZATION\n\n bkgr --> bkgr * A + B\n"
+        #print " A = %3.3f B = %3.3f\n"%(a,b)
+        print " nothing to do ..."
+
+    def __cut(self,x,data,a,b):
+        t = []
+        for i in xrange(len(data)):
+            ww = x[i]
+            if a<=ww<=b: t.append([x[i],data[i]])
+        t = array(t,dtype=float64)
+        return t[:,0],t[:,1]
+        
+    def __get_weights(self):
+        """weights wrt smpl are returned"""
+        f = where(self.smpl<self.__w_max_range,
+                      self.__w_max,self.__w_min)
+        f = where(self.smpl>self.__w_min_range, f,self.__w_min)
+        return f
+        
     def _status_checkbutton(self):
         self.status_line.configure(text='Gaussian fitting checkbutton: ' + \
                                    str(self.if_gaussian.get()))
@@ -1054,6 +1130,8 @@ class FitFields:
         self.line1, = self.ax1.plot(self.x,self.smpl)
         self.line2, = self.ax1.plot(self.x,self.bkgr)
         self.line3, = self.ax2.plot(self.x,self.diff)
+        self.line0, = self.ax1.plot(self.x,zeros(len(self.smpl)),'--',linewidth=1,color='r')
+        self.lineo, = self.ax2.plot(self.x,zeros(len(self.bkgr)),'--',linewidth=1,color='r')
         
         self.ax1.axis([min(self.x),max(self.x),min(self.smpl),max(self.smpl)])
         self.ax2.axis([min(self.x),max(self.x),min(self.smpl),max(self.smpl)])
@@ -1077,6 +1155,7 @@ class FitFields:
         self.diff     = self.smpl - self.bkgr
         self.__min_freq_start = min(x)
         self.__max_freq_start = max(x)
+        self.ndat = len(x)
 
     def _scale1(self,value1):
         self.smpl = self.smpl_ref * float64(value1)
@@ -1119,6 +1198,7 @@ class FitLab:
         self.smpl = self.read_csv(smpl)[:,1]
         self.bkgr = self.read_csv(bkgr)[:,1]
         self.x    = self.read_csv(bkgr)[:,0]
+        self.peak = None
         # write messages about window actions in a common status label:
         frame = Frame(self.master)
         # pack frame with status label at the bottom:
@@ -1284,7 +1364,7 @@ to the FitLab Studio user."""
     def fitting_dialog(self):
         self.fitting_d = Pmw.Dialog(self.master,
                           title='Fitting workshop',
-                          buttons=('Apply', 'Cancel'),
+                          buttons=('Save results', 'Cancel'),
                           #defaultbutton='Apply',
                           command=self.fitting_dialog_action)
         
@@ -1300,17 +1380,45 @@ to the FitLab Studio user."""
 
     def fitting_dialog_action(self, result):
         # result contains the name of the button that we clicked
-        if result == 'Apply':
-            # example on extracting dialog variables:
-            print "Hi"
-            # (changing variables in self.gui are reflected in
-            # the self.status_line)
+        if result == 'Save results':
+            self.__save()
+            text = " Pressed: 'Save results'"
+            self.status_line.configure(text=text)
         else:
             text = 'you just canceled the dialog'
             self.status_line.configure(text=text)
-        # does not work: self.dialog.deactivate(result)
-        self.fitting_d.destroy()  # destroy dialog window
+            self.fitting_d.destroy()
 
+    def __save(self):
+        """writes the data from last fitting in memory"""
+        try:
+           peak, data = self.fitting_d_gui.get_peaks()
+           self.peak = peak
+        except: pass
+
+        if self.peak is None:
+           message = 'No fitting performed - no data to write!'
+           print message
+           answer = tkMessageBox.Message(icon='warning', type='ok',
+                    message=message, title='About').show()
+           #self.status_line.configure(text="'%s' was pressed" % answer)
+        else:
+           peak_no = len(data[0])-3
+           log = "# Freq[cm-1]   Exp          Fit         "
+           for i in range(peak_no):
+               log+= "Peak %i       " % (i+1)
+           log+= "\n"
+           for i in range(len(data)):
+               line = "%9.3f %12.5E %12.5E" % (data[i,0],data[i,1],data[i,2])
+               for j in range(peak_no):
+                   line+= " %12.5E" % data[i,j+3]
+               line+= '\n'
+               log += line
+           self.peak         = peak
+           self.__fit_data   = log
+           self.__fit_report = str(peak)
+           print " The data were saved in memory."
+        
     def __cut(self,x,data,a,b):
         t = []
         for i in xrange(len(data)):
@@ -1358,11 +1466,19 @@ to the FitLab Studio user."""
 
     def file_save(self):
         fname = tkFileDialog.SaveAs(
-                filetypes=[('temporary files','*.tmp')],
-                initialfile='myfile.tmp',
+                filetypes=[('temporary files','*.csv')],
+                initialfile='myfile.csv',
                 title='Save a file').show()
         text = 'chosen file to save: "' + os.path.basename(fname) + '"'
         self.status_line.configure(text=text)
+        file = open(os.path.basename(fname),'w')
+        file.write(self.__fit_data)
+        file.close()
+        print " File %s was written succesfully " % os.path.basename(fname)
+        file = open(os.path.basename(fname)[:-3]+'fit','w')
+        file.write(self.__fit_report)
+        file.close()
+        print " File %s was written succesfully " % (os.path.basename(fname)[:-3]+'fit')
 
     def quit(self, event=None):
         self.master.destroy()
