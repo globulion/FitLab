@@ -1,5 +1,22 @@
 #!/usr/bin/env python
 #*-* coding: utf-8- *-*
+"""
+ ------------------------------------
+             F i t l a b
+ ------------------------------------
+
+ Version 1.1 Bartosz Błasiak Sep 2013 
+ 
+ Fitting software for signal analysis
+ 
+ Usage: 
+ 
+ ./fitlab [sample] [backround]
+ 
+ Notes:
+ the input files are csv files
+ ------------------------------------
+"""
 import Pmw, Tkinter, string, random, pylab, sys, os, re,\
        tkMessageBox, tkFileDialog, tkColorChooser, utilities
 from numpy import *
