@@ -842,6 +842,7 @@ class FitWork:
             print " - PARAMETES -"
             utilities.PRINT(self.__parameters)
             print " - CONSTRAINTS -"
+            if not self.__constraints.any(): print "   None"
             utilities.PRINT(self.__constraints)
         else:
             text = 'your input parameters were lost!'
@@ -1401,7 +1402,7 @@ to the FitLab Studio user."""
            print message
            answer = tkMessageBox.Message(icon='warning', type='ok',
                     message=message, title='About').show()
-           #self.status_line.configure(text="'%s' was pressed" % answer)
+           self.status_line.configure(text="'%s' was pressed" % answer)
         else:
            peak_no = len(data[0])-3
            log = "# Freq[cm-1]   Exp          Fit         "
@@ -1469,16 +1470,17 @@ to the FitLab Studio user."""
                 filetypes=[('temporary files','*.csv')],
                 initialfile='myfile.csv',
                 title='Save a file').show()
-        text = 'chosen file to save: "' + os.path.basename(fname) + '"'
-        self.status_line.configure(text=text)
-        file = open(os.path.basename(fname),'w')
-        file.write(self.__fit_data)
-        file.close()
-        print " File %s was written succesfully " % os.path.basename(fname)
-        file = open(os.path.basename(fname)[:-3]+'fit','w')
-        file.write(self.__fit_report)
-        file.close()
-        print " File %s was written succesfully " % (os.path.basename(fname)[:-3]+'fit')
+        if fname:
+           text = 'chosen file to save: "' + os.path.basename(fname) + '"'
+           self.status_line.configure(text=text)
+           file = open(os.path.basename(fname),'w')
+           file.write(self.__fit_data)
+           file.close()
+           print " File %s was written succesfully " % os.path.basename(fname)
+           file = open(os.path.basename(fname)[:-3]+'fit','w')
+           file.write(self.__fit_report)
+           file.close()
+           print " File %s was written succesfully " % (os.path.basename(fname)[:-3]+'fit')
 
     def quit(self, event=None):
         self.master.destroy()
