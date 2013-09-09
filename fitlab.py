@@ -239,7 +239,65 @@ class FitParameters:
                                    entry_textvariable=cmax,))
                   constraint_widgets.append(pair)
                   constraint_widgets_values.append([cmin.get(),cmax.get()])
-                                      
+                  
+        elif self.func == 'v':
+           for i in range(self.peak_no):
+               text = 'xo_%i'%(i+1)
+               param  = DoubleVar(); param.set(1.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'sigmaL_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'sigmaG_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+               #
+               text = 'A_%i'%(i+1)
+               param  = DoubleVar(); param.set(3.0)
+               param_widgets.append(Pmw.EntryField(frame_par,
+                                    labelpos='w',
+                                    label_text=text,
+                                    entry_width='10',
+                                    entry_textvariable=param,))
+               param_widgets_values.append(param.get())
+                  
+               if self.constrained:
+                 for i in range(4):
+                  pair = []
+                  text = 'min'
+                  cmin  = DoubleVar(); cmin.set(0.0)
+                  pair.append(Pmw.EntryField(frame_cmin,
+                                   labelpos='w',
+                                   label_text=text,
+                                   entry_width='10',
+                                   entry_textvariable=cmin,))
+                  cmax  = DoubleVar(); cmax.set(3000.0)
+                  text = 'max'
+                  pair.append(Pmw.EntryField(frame_cmax,
+                                   labelpos='w',
+                                   label_text=text,
+                                   entry_width='10',
+                                   entry_textvariable=cmax,))
+                  constraint_widgets.append(pair)
+                  constraint_widgets_values.append([cmin.get(),cmax.get()])
+                                                        
         for widget in param_widgets:
             widget.pack(side='top')
 
@@ -549,7 +607,7 @@ class FitWork:
                command=self._get_func)
 
         ### add items; radio buttons are only feasible for a few items:
-        for text in ('Gaussian', 'Lorenzian', 'LG-1', 'LG-2', 'Voight'):
+        for text in ('Gaussian', 'Lorenzian', 'LG-1', 'LG-2', 'Voigt'):
             self.check_func_widget.add(text)
         self.check_func_widget.invoke('Gaussian')  ### 'item2' is pressed by default
         
@@ -587,7 +645,7 @@ class FitWork:
         self.__func = value
         if   value == 'Gaussian' : self.__func = 'g'
         elif value == 'Lorenzian': self.__func = 'l'
-        elif value == 'Voight'   : self.__func = 'v'
+        elif value == 'Voigt'    : self.__func = 'v'
         elif value == 'LG-1'     : self.__func = 'lg1'
         elif value == 'LG-2'     : self.__func = 'lg2'
         self._status_radio_check_func(value)
@@ -638,10 +696,9 @@ class FitWork:
         param   = peak.get_parameters()
         fitdata = peak.get_fit()
         peaks   = peak.get_peaks()
-        print 'R^2: %20.6f' % peak.get_r2()
-        print 'PARAMETERS\n\n', param
+        print peak
 
-        print " Reseted?: ",str(self.__if_peakfit)
+        #print " Reseted?: ",str(self.__if_peakfit)
         if not self.__if_peakfit:
            self.__if_peakfit = True
            self.line2, = self.ax1.plot(self.__x,fitdata,':',label='fit',linewidth='2')
@@ -713,6 +770,21 @@ class FitWork:
                        ['xo_2',pars[5 ]], ['sigmaL_2',pars[6 ]], ['sigmaG_2',pars[7]], ['A_2',pars[8 ]], ['m_2',pars[9 ]],
                        ['xo_3',pars[10]], ['sigmaL_3',pars[11]], ['sigmaG_3',pars[12]], ['A_3',pars[13]], ['m_3',pars[14]],
                        ['xo_4',pars[15]], ['sigmaL_4',pars[16]], ['sigmaG_4',pars[17]], ['A_4',pars[18]], ['m_4',pars[19]]]
+        elif self.__func == 'v':
+          if   peak_no ==1:
+               opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]],['A_1',pars[3]]]
+          elif peak_no ==2:
+               opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]], ['A_1',pars[3]],
+                       ['xo_2',pars[4]], ['sigmaL_2',pars[5]], ['sigmaG_2',pars[6]], ['A_2',pars[7]]]
+          elif peak_no ==3:
+               opts = [['xo_1',pars[0]], ['sigmaL_1',pars[1]], ['sigmaG_1',pars[2]], ['A_1',pars[3]],
+                       ['xo_2',pars[4]], ['sigmaL_2',pars[5]], ['sigmaG_2',pars[6]], ['A_2',pars[7]],
+                       ['xo_3',pars[8]], ['sigmaL_3',pars[9]], ['sigmaG_3',pars[10]], ['A_3',pars[11]]]
+          elif peak_no ==4:
+               opts = [['xo_1',pars[0 ]], ['sigmaL_1',pars[1 ]], ['sigmaG_1',pars[2]], ['A_1',pars[3 ]],
+                       ['xo_2',pars[4 ]], ['sigmaL_2',pars[5 ]], ['sigmaG_2',pars[6]], ['A_2',pars[7 ]],
+                       ['xo_3',pars[8 ]], ['sigmaL_3',pars[9 ]], ['sigmaG_3',pars[10]], ['A_3',pars[11]],
+                       ['xo_4',pars[12]], ['sigmaL_4',pars[13]], ['sigmaG_4',pars[14]], ['A_4',pars[15]]]
         return opts
                         
     def update(self):
@@ -902,28 +974,6 @@ class FitFields:
                                          background='yellow',
                                          foreground='blue',
                                          command=self._quit)
-        
-        # checkbutton:
-        self.if_gaussian = IntVar(); self.if_gaussian.set(1)
-        self.if_gaussian_widget = Checkbutton(parent,
-                        text='Gaussian',
-                        variable=self.if_gaussian,
-                        command=self._status_checkbutton)
-      
-        # Pmw radio buttons
-        self.check_func_widget = Pmw.RadioSelect(frame_right,
-               selectmode='single',
-               buttontype='radiobutton', ### 'button': plain button layout
-               labelpos='n',
-               #label_text='Select type of function to fit:',
-               orient='horizontal',
-               frame_relief='ridge', ### try some decoration...
-               command=self._status_radio_check_func)
-
-        ### add items; radio buttons are only feasible for a few items:
-        for text in ('Gaussian', 'Lorenzian', 'Voight'):
-            self.check_func_widget.add(text)
-        self.check_func_widget.invoke('Gaussian')  ### 'item2' is pressed by default
 
         # entry fields
         self.min_freq = DoubleVar(); self.min_freq.set(self.__min_freq_start)
