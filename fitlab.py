@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#*-* coding: utf-8- *-*
 import Pmw, Tkinter, string, random, pylab, sys, os, re,\
        tkMessageBox, tkFileDialog, tkColorChooser, utilities
 from numpy import *
@@ -1589,15 +1590,26 @@ future development of FitLab Studio""",
 =================================================================
               Welcome to FitLab Studio 2013 !!!
 =================================================================
+                                      Copyright, Bartosz Błasiak
+                                                 
 This application demonstrates many of the most common tools in
 graphical user interfaces with spectroscopic data. It provides
 very poverful set of utilities for post-processing, fitting and
 analyzing your spectras!. The typical usage is to (i) launch
 
-   %s
+   %s [smpl.csv] [bkgr.csv]
+
+where 
+[smpl.csv] - CSV file with sample spectrum
+[bkgr.csv] - CSV file with background (e.g. solvent matrix)
+
 
 Happy happy!!!!
 Happy happy!!!!
+
+-----------------------------------------------------------------
+                              Seoul (Korea),  09.09.2013/23:32
+-----------------------------------------------------------------
 """ % sys.argv[0]
 
         # determine the number of lines and the max linewidth:
