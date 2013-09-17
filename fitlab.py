@@ -707,7 +707,7 @@ class FitWork:
     def __plot(self):
         """plots the selected peaks"""
         self.ax1  = self.fig.add_subplot(111)
-        self.ax1.grid(False)
+        self.ax1.grid(True)
         self.ax1.set_title("Signal Fitting Workplate")
         self.ax1.set_xlabel("Frequency [cm$^{-1}$]")
         self.ax1.set_ylabel("Absorbance")
@@ -715,6 +715,7 @@ class FitWork:
         self.ax1.axis([min(self.__x),max(self.__x),min(self.__y),max(self.__y)])        
         self.line1, = self.ax1.plot(self.__x,self.__y,linewidth='2',label='raw')
         self.fig.legend((self.line1,),('raw',),loc='upper right')
+        self.line0, = self.ax1.plot(self.__x,zeros(len(self.__x)),'--',linewidth=1,color='r')
 
     def _fit(self,method='slsqp'):
         """perform fitting"""
@@ -861,7 +862,7 @@ class FitWork:
             utilities.PRINT(self.__parameters)
             print " - CONSTRAINTS -"
             if not self.__constraints.any(): print "   None"
-            utilities.PRINT(self.__constraints)
+            utilities.PRINTL(self.__constraints)
         else:
             text = 'your input parameters were lost!'
             self.status_line.configure(text=text)
@@ -974,7 +975,7 @@ class FitFields:
                                        sliderlength=10,
                                        #,tickinterval=0.1
                                        length=450, 
-                                       resolution=0.0001,
+                                       resolution=0.00001,
                                        variable = self.m1,
                                        command=self._move1)
                                        
@@ -986,7 +987,7 @@ class FitFields:
                                        sliderlength=10,
                                        #,tickinterval=0.1
                                        length=450,
-                                       resolution=0.0001,
+                                       resolution=0.00001,
                                        variable = self.m2,
                                        command=self._move2)
 
@@ -998,7 +999,7 @@ class FitFields:
                                        sliderlength=10,
                                        #,tickinterval=0.1
                                        length=450, 
-                                       resolution=0.0001,
+                                       resolution=0.00001,
                                        variable = self.s1,
                                        command=self._scale1)
                                        
@@ -1010,7 +1011,7 @@ class FitFields:
                                        sliderlength=10,
                                        #,tickinterval=0.1
                                        length=450, 
-                                       resolution=0.0001,
+                                       resolution=0.00001,
                                        variable = self.s2,
                                        command=self._scale2)
 
@@ -1708,7 +1709,6 @@ def create_fields():
     widget.pack()
     status.pack()  # get the status line below the widgets
     root.mainloop()
-import tkMessageBox
     
 def run_fitlab(bkgr,smpl):
     root = Tk()
@@ -1724,6 +1724,8 @@ def run_fitlab(bkgr,smpl):
     
 # run FitLab and enjoy!!!
 if __name__ == '__main__':
+    print __doc__
+    if len(sys.argv) == 1: exit()
     #create_fields()
     smpl = sys.argv[1]
     bkgr = sys.argv[2]
