@@ -1215,9 +1215,9 @@ class FitLab:
         self.master = parent
         self.balloon = Pmw.Balloon(self.master)  # used for all balloon helps
 
-        self.smpl = self.read_csv(smpl)[:,1]
-        self.bkgr = self.read_csv(bkgr)[:,1]
-        self.x    = self.read_csv(bkgr)[:,0]
+        self.smpl = self.read_file_1d(smpl)[:,1]
+        self.bkgr = self.read_file_1d(bkgr)[:,1]
+        self.x    = self.read_file_1d(bkgr)[:,0]
         self.peak = None
         # write messages about window actions in a common status label:
         frame = Frame(self.master)
@@ -1257,8 +1257,8 @@ class FitLab:
         f = open(file)                   
         line = f.readline()
         
-        if    file.endsqith('.csv'): delimiter = ','
-        elif: file.endsqith('.dat'): delimiter = ' '
+        if    file.endswith('.csv'): delimiter = ','
+        elif  file.endswith('.dat'): delimiter = ' '
         else: raise Exception('FitlabError: Incorrect file format or extension. Make sure whether your input data file is correct')
         
         while line:                      
