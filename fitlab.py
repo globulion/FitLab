@@ -1258,10 +1258,10 @@ class FitLab:
         line = f.readline()
         
         if    file.endswith('.csv'): delimiter = ','
-        elif  file.endswith('.dat'): delimiter = ' '
+        elif  file.endswith('.dat'): delimiter = None
         else: raise Exception('FitlabError: Incorrect file format or extension. Make sure whether your input data file is correct')
         
-        while line:                      
+        while line:
           a,b = line.split( delimiter )         
           if float64(a)<=fmax: break
           line = f.readline()           
