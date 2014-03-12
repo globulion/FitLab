@@ -1251,17 +1251,22 @@ class FitLab:
         """update data"""
         pass
     
-    def read_csv(self,file,fmin=0,fmax=1e40):
-        """read csv file"""              
+    def read_file_1d(self,file,fmin=0,fmax=1e40):
+        """read csv or dat file"""              
         data = []                        
         f = open(file)                   
         line = f.readline()
+        
+        if    file.endsqith('.csv'): delimiter = ','
+        elif: file.endsqith('.dat'): delimiter = ' '
+        else: raise Exception('FitlabError: Incorrect file format or extension. Make sure whether your input data file is correct')
+        
         while line:                      
-          a,b = line.split(',')         
+          a,b = line.split( delimiter )         
           if float64(a)<=fmax: break
           line = f.readline()           
         while (a>=fmin and line):
-          a,b = line.split(',') 
+          a,b = line.split( delimiter ) 
           a = float64(a)                
           b = float64(b)                
           data.append([a,b])            
