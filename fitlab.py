@@ -18,7 +18,7 @@
  ------------------------------------
 """
 import Pmw, Tkinter, string, random, pylab, sys, os, re,\
-       tkMessageBox, tkFileDialog, tkColorChooser, utilities
+       tkMessageBox, tkFileDialog, tkColorChooser, libbbg.utilities
 from numpy import *
 from pylab import *
 from Tkinter import *
@@ -719,7 +719,7 @@ class FitWork:
 
     def _fit(self,method='slsqp'):
         """perform fitting"""
-        peak = utilities.Peak(self.__x,self.__y)
+        peak = libbbg.utilities.Peak(self.__x,self.__y)
         constr = self.__constraints
         peak_no = self.__peak_no
         bounds = []
@@ -859,10 +859,10 @@ class FitWork:
             self.__parameters, self.__constraints = self.parameter_d_gui.get()
             print " NEW FITTING SETTINGS\n"
             print " - PARAMETES -"
-            utilities.PRINT(self.__parameters)
+            libbbg.utilities.PRINT(self.__parameters)
             print " - CONSTRAINTS -"
             if not self.__constraints.any(): print "   None"
-            utilities.PRINTL(self.__constraints)
+            libbbg.utilities.PRINTL(self.__constraints)
         else:
             text = 'your input parameters were lost!'
             self.status_line.configure(text=text)
@@ -1258,6 +1258,7 @@ class FitLab:
         line = f.readline()
         
         if    file.endswith('.csv'): delimiter = ','
+        elif  file.endswith('.dpt'): delimiter = ','
         elif  file.endswith('.dat'): delimiter = None
         else: raise Exception('FitlabError: Incorrect file format or extension. Make sure whether your input data file is correct')
         
@@ -1617,7 +1618,7 @@ future development of FitLab Studio""",
                                                  
 This application demonstrates many of the most common tools in
 graphical user interfaces with spectroscopic data. It provides
-very poverful set of utilities for post-processing, fitting and
+very poverful set of libbbg.utilities for post-processing, fitting and
 analyzing your spectras!. The typical usage is to (i) launch
 
    %s [smpl.csv] [bkgr.csv]
