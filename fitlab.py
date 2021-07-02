@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 #*-* coding: utf-8- *-*
 """
  ------------------------------------
@@ -17,16 +17,19 @@
  the input files are csv files
  ------------------------------------
 """
-import Pmw, Tkinter, string, random, pylab, sys, os, re,\
-       tkMessageBox, tkFileDialog, tkColorChooser, libbbg.utilities
+import Pmw, tkinter, string, random, pylab, sys, os, re,\
+       libbbg.utilities
+import tkinter.messagebox as tkMessageBox 
+import tkinter.filedialog as tkFileDialog 
+import tkinter.colorchooser as tkColorChooser
 from numpy import *
 from pylab import *
-from Tkinter import *
+from tkinter import *
 from sys import argv, exit
 from Scientific.TkWidgets.TkPlotCanvas import \
      PolyLine, PolyMarker, PlotGraphics, PlotCanvas
 from matplotlib.backends.backend_tkagg import \
-     FigureCanvasTkAgg, NavigationToolbar2TkAgg
+     FigureCanvasTkAgg, NavigationToolbar2Tk as NavigationToolbar2TkAgg
 
 class FitParameters:
     """
@@ -401,10 +404,10 @@ class InputLists:
         # or give the items value as keyword 'items='
         # at construction time
 
-        # example on updating an option in, e.g., the Tkinter
+        # example on updating an option in, e.g., the tkinter
         # Listbox part of a Pmw.ScrolledListBox:
         # self.list.component('listbox').configure(background='blue')
-        # i.e. the parts (listbox, label, etc) are ordinary Tkinter
+        # i.e. the parts (listbox, label, etc) are ordinary tkinter
         # widgets that can be extracted by the component method
 
         # simple combo box with list and entry for chosen item:
@@ -734,7 +737,7 @@ class FitWork:
         param   = peak.get_parameters()
         fitdata = peak.get_fit()
         peaks   = peak.get_peaks()
-        print peak
+        print(peak)
         self.__peak = peak
 
         #print " Reseted?: ",str(self.__if_peakfit)
@@ -833,10 +836,10 @@ class FitWork:
     def reset(self):
         """reset fitting (start from the beginning)"""
         self.__if_peakfit = False
-        print " I have reset myself! Start fitting again, young lad or laddness!"
+        print(" I have reset myself! Start fitting again, young lad or laddness!")
             
     def _parameter_dialog(self):
-        self.t2 = Tkinter.Tk()
+        self.t2 = tkinter.Tk()
         self.t2.frame = Frame(self.t2)
         #filewindow = Toplevel(parent)
         self.frame = Frame(self.master)
@@ -857,11 +860,11 @@ class FitWork:
         if result == 'Apply':
             self.parameter_d_gui.update()
             self.__parameters, self.__constraints = self.parameter_d_gui.get()
-            print " NEW FITTING SETTINGS\n"
-            print " - PARAMETES -"
+            print(" NEW FITTING SETTINGS\n")
+            print(" - PARAMETES -")
             libbbg.utilities.PRINT(self.__parameters)
-            print " - CONSTRAINTS -"
-            if not self.__constraints.any(): print "   None"
+            print(" - CONSTRAINTS -")
+            if not self.__constraints.any(): print("   None")
             libbbg.utilities.PRINTL(self.__constraints)
         else:
             text = 'your input parameters were lost!'
@@ -933,7 +936,7 @@ class FitFields:
             self.create(self.topframe.interior())
             # or: self.create(self.topframe.component('frame'))
         else:
-            # use a standard Tkinter Frame with adaptive size:
+            # use a standard tkinter Frame with adaptive size:
             self.topframe = Frame(self.master, borderwidth=2, relief='groove')
             self.topframe.pack(expand=True, fill='both')
             # create all other widgets inside the top frame:
@@ -960,10 +963,10 @@ class FitFields:
         self.fig = pylab.figure(1)
         self.canvas = FigureCanvasTkAgg(self.fig, master=frame_graph)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
+        self.canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
         self.toolbar = NavigationToolbar2TkAgg( self.canvas, frame_graph )
         self.toolbar.update()
-        self.canvas._tkcanvas.pack(side=Tkinter.TOP, fill=Tkinter.BOTH, expand=1)
+        self.canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
         #self.master.protocol("WM_DELETE_WINDOW", self.master.quit)
                
         # sliders
@@ -1096,11 +1099,11 @@ class FitFields:
         #self.canvas.draw()
         #print "\n OPTIMIZATION\n\n bkgr --> bkgr * A + B\n"
         #print " A = %3.3f B = %3.3f\n"%(a,b)
-        print " nothing to do ..."
+        print(" nothing to do ...")
 
     def __cut(self,x,data,a,b):
         t = []
-        for i in xrange(len(data)):
+        for i in range(len(data)):
             ww = x[i]
             if a<=ww<=b: t.append([x[i],data[i]])
         t = array(t,dtype=float64)
@@ -1266,6 +1269,7 @@ class FitLab:
           a,b = line.split( delimiter )         
           if float64(a)<=fmax: break
           line = f.readline()           
+        a = float64(a)
         while (a>=fmin and line):
           a,b = line.split( delimiter ) 
           a = float64(a)                
@@ -1424,7 +1428,7 @@ to the FitLab Studio user."""
 
         if self.peak is None:
            message = 'No fitting performed - no data to write!'
-           print message
+           print(message)
            answer = tkMessageBox.Message(icon='warning', type='ok',
                     message=message, title='About').show()
            self.status_line.configure(text="'%s' was pressed" % answer)
@@ -1443,11 +1447,11 @@ to the FitLab Studio user."""
            self.peak         = peak
            self.__fit_data   = log
            self.__fit_report = str(peak)
-           print " The data were saved in memory."
+           print(" The data were saved in memory.")
         
     def __cut(self,x,data,a,b):
         t = []
-        for i in xrange(len(data)):
+        for i in range(len(data)):
             ww = x[i]
             if a<=ww<=b: t.append([x[i],data[i]])
         return array(t,dtype=float64)
@@ -1501,11 +1505,11 @@ to the FitLab Studio user."""
            file = open(os.path.basename(fname),'w')
            file.write(self.__fit_data)
            file.close()
-           print " File %s was written succesfully " % os.path.basename(fname)
+           print(" File %s was written succesfully " % os.path.basename(fname))
            file = open(os.path.basename(fname)[:-3]+'fit','w')
            file.write(self.__fit_report)
            file.close()
-           print " File %s was written succesfully " % (os.path.basename(fname)[:-3]+'fit')
+           print(" File %s was written succesfully " % (os.path.basename(fname)[:-3]+'fit'))
 
     def quit(self, event=None):
         self.master.destroy()
@@ -1730,7 +1734,7 @@ def run_fitlab(bkgr,smpl):
     
 # run FitLab and enjoy!!!
 if __name__ == '__main__':
-    print __doc__
+    print(__doc__)
     if len(sys.argv) == 1: exit()
     #create_fields()
     smpl = sys.argv[1]
